@@ -8,15 +8,15 @@ export default function PostToDo(): JSX.Element {
   return (
     <Box onSubmit={cardSubmitHandler} as="form" mt={3}>
       <Stack spacing={3}>
-        <Input name="title" placeholder="title" size="md" type="text" required />
-        <Input name="description" placeholder="description" size="md" type="text" required />
+        <Input name="title" placeholder="Title" size="md" type="text" required />
+        <Input name="description" placeholder="Description" size="md" type="text" required />
         <Select name="status" placeholder="Select status" required>
           <option value="Новая">Новая</option>
           <option value="В обработке">В обработке</option>
           <option value="Завершена">Завершена</option>
         </Select>
         <Button type="submit" colorScheme="blue">
-          ok
+          OK
         </Button>
       </Stack>
     </Box>

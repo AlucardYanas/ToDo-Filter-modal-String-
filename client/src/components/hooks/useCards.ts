@@ -1,31 +1,19 @@
 import { useEffect, useState } from 'react';
-import {
-  addCardThunk,
-  deleteCardThunk,
-  getCardsThunk,
-  updateCardThunk,
-} from '../../redux/cards/cardAsyncAction';
-import type { CardDataType, CardType } from '../../types/CardTypes';
-import { useAppDispatch, useAppSelector } from './reduxHooks';
+import { 
+  useGetCardsQuery, 
+  useAddCardMutation, 
+  useUpdateCardMutation, 
+  useDeleteCardMutation 
+} from '../../redux/cards/apiSlice';
+import type { CardType, CardDataType } from '../../types/CardTypes';
 
-export default function useCards(): {
-  cards: CardType[];
-  filteredCards: CardType[];
-  cardSubmitHandler: (e: React.FormEvent<HTMLFormElement>) => void;
-  deleteHandler: (id: CardType['id']) => void;
-  editHandler: (id: CardType['id'], updatedCard: CardType) => void;
-  filterHandler: (status: string) => void;
-  updateStatusHandler: (id: CardType['id'], status: string) => void;
-  selectedStatus: string | null;
-} {
-  const cards = useAppSelector((state) => state.cards.data);
-  const dispatch = useAppDispatch();
+export default function useCards() {
+  const { data: cards = [], refetch } = useGetCardsQuery();
+  const [addCard] = useAddCardMutation();
+  const [updateCard] = useUpdateCardMutation();
+  const [deleteCard] = useDeleteCardMutation();
   const [filteredCards, setFilteredCards] = useState<CardType[]>([]);
   const [selectedStatus, setSelectedStatus] = useState<string | null>(null);
-
-  useEffect(() => {
-    void dispatch(getCardsThunk());
-  }, [dispatch]);
 
   useEffect(() => {
     if (selectedStatus) {
@@ -35,7 +23,7 @@ export default function useCards(): {
     }
   }, [cards, selectedStatus]);
 
-  const cardSubmitHandler = (e: React.FormEvent<HTMLFormElement>): void => {
+  const cardSubmitHandler = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault();
     const form = e.currentTarget as HTMLFormElement;
     const data = Object.fromEntries(new FormData(e.currentTarget)) as CardDataType;
@@ -45,26 +33,30 @@ export default function useCards(): {
       return;
     }
 
-    void dispatch(addCardThunk(data));
+    await addCard(data).unwrap();
     form.reset();
+    refetch();
   };
 
-  const deleteHandler = (id: CardType['id']): void => {
-    void dispatch(deleteCardThunk(id));
+  const deleteHandler = async (id: number): Promise<void> => {
+    await deleteCard(id).unwrap();
+    refetch();
   };
 
-  const editHandler = (id: CardType['id'], updatedCard: CardType): void => {
-    void dispatch(updateCardThunk({ id, updatedCard }));
+  const editHandler = async (id: number, updatedCard: CardType): Promise<void> => {
+    await updateCard({ id, updatedCard }).unwrap();
+    refetch();
   };
 
   const filterHandler = (status: string): void => {
     setSelectedStatus(status);
   };
 
-  const updateStatusHandler = (id: CardType['id'], status: string): void => {
+  const updateStatusHandler = async (id: number, status: string): Promise<void> => {
     const updatedCard = cards.find(card => card.id === id);
     if (updatedCard) {
-      void dispatch(updateCardThunk({ id, updatedCard: { ...updatedCard, status } }));
+      await updateCard({ id, updatedCard: { ...updatedCard, status } }).unwrap();
+      refetch();
     }
   };
 

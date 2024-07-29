@@ -1,15 +1,15 @@
-/* eslint-disable import/prefer-default-export */
-import {configureStore} from '@reduxjs/toolkit';
+import { configureStore } from '@reduxjs/toolkit';
+import { apiSlice } from './cards/apiSlice';
 
-import cardSlice from './cards/cardSlice';
-
-export const store = configureStore({
+const store = configureStore({
   reducer: {
-    cards: cardSlice.reducer,
+    [apiSlice.reducerPath]: apiSlice.reducer,
+    // Другие редюсеры, если есть
   },
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware().concat(apiSlice.middleware),
 });
 
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
-
-export type StoreType = typeof store;
+export default store;

@@ -63,6 +63,16 @@ export default function ToDoCard({
               <Button colorScheme="red" onClick={() => deleteHandler(card.id)}>
                 Delete
               </Button>
+              <Menu>
+                <MenuButton as={Button} colorScheme="blue" ml={2}>
+                  Change Status
+                </MenuButton>
+                <MenuList>
+                  <MenuItem onClick={() => updateStatusHandler(card.id, 'Новая')}>Новая</MenuItem>
+                  <MenuItem onClick={() => updateStatusHandler(card.id, 'В обработке')}>В обработке</MenuItem>
+                  <MenuItem onClick={() => updateStatusHandler(card.id, 'Завершена')}>Завершена</MenuItem>
+                </MenuList>
+              </Menu>
             </Flex>
           </Flex>
         </CardBody>
@@ -89,6 +99,7 @@ export default function ToDoCard({
               mb={3}
             />
             <Select
+              name="status"
               value={status}
               onChange={(e) => setStatus(e.target.value)}
               placeholder="Select status"
