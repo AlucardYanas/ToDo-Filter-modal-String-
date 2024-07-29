@@ -47,7 +47,7 @@ export default function ToDoCard({
 
   return (
     <>
-      <Card onClick={onOpen} cursor="pointer">
+      <Card>
         <CardBody>
           <Flex justify="space-between" align="center">
             <Flex align="center">
@@ -56,7 +56,10 @@ export default function ToDoCard({
               <Text>{card.status}</Text>
             </Flex>
             <Flex>
-              <Button colorScheme="red" onClick={(e) => { e.stopPropagation(); deleteHandler(card.id); }}>
+              <Button colorScheme="blue" onClick={onOpen} mr={2}>
+                Edit
+              </Button>
+              <Button colorScheme="red" onClick={() => deleteHandler(card.id)}>
                 Delete
               </Button>
             </Flex>
