@@ -1,10 +1,9 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   Button,
   Card,
   CardBody,
   Flex,
-  Input,
   Text,
   Menu,
   MenuButton,
@@ -17,33 +16,35 @@ import {
   ModalFooter,
   ModalBody,
   ModalCloseButton,
-  useDisclosure,
+  Input,
   Select,
 } from '@chakra-ui/react';
 import type { CardType } from '../../types/CardTypes';
+import useEditModal from '../hooks/useEditModal';
 
 type CardTypes = {
   card: CardType;
   deleteHandler: (id: CardType['id']) => void;
-  editHandler: (id: CardType['id'], updatedCard: CardType) => void;
   updateStatusHandler: (id: CardType['id'], status: string) => void;
 };
 
 export default function ToDoCard({
   card,
   deleteHandler,
-  editHandler,
   updateStatusHandler,
 }: CardTypes): JSX.Element {
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const [title, setTitle] = useState(card.title);
-  const [description, setDescription] = useState(card.description);
-  const [status, setStatus] = useState(card.status);
-
-  const handleSave = (): void => {
-    editHandler(card.id, { ...card, title, description, status });
-    onClose();
-  };
+  const {
+    isOpen,
+    onOpen,
+    onClose,
+    handleSave,
+    title,
+    setTitle,
+    description,
+    setDescription,
+    status,
+    setStatus,
+  } = useEditModal(card);
 
   return (
     <>
@@ -100,7 +101,7 @@ export default function ToDoCard({
 
           <ModalFooter>
             <Button colorScheme="blue" mr={3} onClick={handleSave}>
-              Edit
+              Save
             </Button>
             <Button variant="ghost" onClick={onClose}>Cancel</Button>
           </ModalFooter>

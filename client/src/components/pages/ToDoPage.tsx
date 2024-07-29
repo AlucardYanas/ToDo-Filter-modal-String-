@@ -4,7 +4,7 @@ import ToDoCard from '../ui/ToDoCard';
 import useCards from '../hooks/useCards';
 
 export default function ToDoPage(): JSX.Element {
-  const { filteredCards, deleteHandler, editHandler, filterHandler, updateStatusHandler, selectedStatus } = useCards();
+  const { filteredCards, deleteHandler, filterHandler, updateStatusHandler, selectedStatus } = useCards();
 
   return (
     <Box>
@@ -21,10 +21,9 @@ export default function ToDoPage(): JSX.Element {
       {selectedStatus ? (
         filteredCards.map((el) => (
           <ToDoCard
-            editHandler={editHandler}
             key={el.id}
-            deleteHandler={deleteHandler}
             card={el}
+            deleteHandler={deleteHandler}
             updateStatusHandler={updateStatusHandler}
           />
         ))
