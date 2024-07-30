@@ -1,8 +1,8 @@
+// hooks/useEditModal.ts
 import { useDisclosure } from '@chakra-ui/react';
 import { useState, useEffect } from 'react';
 import type { CardType } from '../../types/CardTypes';
-import { useAppDispatch, useAppSelector } from './reduxHooks';
-import { updateCardThunk } from '../../redux/cards/cardAsyncAction';
+import { useUpdateCardMutation } from '../../redux/cards/apiSlice';
 
 export default function useEditModal(card: CardType | null): {
   isOpen: boolean;
@@ -20,7 +20,7 @@ export default function useEditModal(card: CardType | null): {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [status, setStatus] = useState('');
-  const dispatch = useAppDispatch();
+  const [updateCard] = useUpdateCardMutation();
 
   useEffect(() => {
     if (card) {
@@ -30,10 +30,10 @@ export default function useEditModal(card: CardType | null): {
     }
   }, [card]);
 
-  const handleSave = (): void => {
+  const handleSave = async (): Promise<void> => {
     if (card) {
       const updatedCard = { ...card, title, description, status };
-      void dispatch(updateCardThunk({ id: card.id, updatedCard }));
+      await updateCard({ id: card.id, updatedCard }).unwrap();
       onClose();
     }
   };

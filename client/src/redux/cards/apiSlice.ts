@@ -18,7 +18,7 @@ export const apiSlice = createApi({
     updateCard: builder.mutation<CardType, { id: number, updatedCard: CardType }>({
       query: ({ id, updatedCard }) => ({
         url: `/cards/${id}`,
-        method: 'PUT',
+        method: 'PATCH',
         body: updatedCard,
       }),
     }),

@@ -7,7 +7,7 @@ import {
 } from '../../redux/cards/apiSlice';
 import type { CardType, CardDataType } from '../../types/CardTypes';
 
-export default function useCards() {
+export default function useCards(): JSX.Element {
   const { data: cards = [], refetch } = useGetCardsQuery();
   const [addCard] = useAddCardMutation();
   const [updateCard] = useUpdateCardMutation();
