@@ -5,10 +5,6 @@ import {
   CardBody,
   Flex,
   Text,
-  Menu,
-  MenuButton,
-  MenuList,
-  MenuItem,
   Modal,
   ModalOverlay,
   ModalContent,
@@ -25,13 +21,11 @@ import useEditModal from '../hooks/useEditModal';
 type CardTypes = {
   card: CardType;
   deleteHandler: (id: CardType['id']) => void;
-  updateStatusHandler: (id: CardType['id'], status: string) => void;
 };
 
 export default function ToDoCard({
   card,
   deleteHandler,
-  updateStatusHandler,
 }: CardTypes): JSX.Element {
   const {
     isOpen,
@@ -42,8 +36,8 @@ export default function ToDoCard({
     setTitle,
     description,
     setDescription,
-    status,
-    setStatus,
+    cardStatus,
+    setCardStatus,
   } = useEditModal(card);
 
   return (
@@ -51,16 +45,16 @@ export default function ToDoCard({
       <Card>
         <CardBody>
           <Flex justify="space-between" align="center">
-            <Flex align="center">
-              <Text>{card.title}</Text>
+            <Flex direction="column">
+              <Text fontWeight="bold">{card.title}</Text>
               <Text>{card.description}</Text>
-              <Text>{card.status}</Text>
+              <Text>Status: {card.status}</Text>
             </Flex>
-            <Flex>
-              <Button colorScheme="blue" onClick={onOpen} mr={2}>
+            <Flex direction="column" align="flex-end">
+              <Button colorScheme="blue" onClick={onOpen} mb={2}>
                 Edit
               </Button>
-              <Button colorScheme="red" onClick={() => deleteHandler(card.id)}>
+              <Button colorScheme="red" onClick={() => deleteHandler(card.id)} mb={2}>
                 Delete
               </Button>
             </Flex>
@@ -89,13 +83,13 @@ export default function ToDoCard({
               mb={3}
             />
             <Select
-              value={status}
-              onChange={(e) => setStatus(e.target.value)}
+              value={cardStatus}
+              onChange={(e) => setCardStatus(e.target.value)}
               placeholder="Select status"
             >
-              <option value="Новая">Новая</option>
-              <option value="В обработке">В обработке</option>
-              <option value="Завершена">Завершена</option>
+              <option value="New">New</option>
+              <option value="Pending">Pending</option>
+              <option value="Fulfilled">Fulfilled</option>
             </Select>
           </ModalBody>
 

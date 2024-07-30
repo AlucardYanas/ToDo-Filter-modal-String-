@@ -5,7 +5,6 @@ export type CardType = {
   description: string;
   status: string;
 
-
 };
 
 // Описание типа CardDataType без поля 'id'

@@ -11,9 +11,9 @@ export default function PostToDo(): JSX.Element {
         <Input name="title" placeholder="title" size="md" type="text" required />
         <Input name="description" placeholder="description" size="md" type="text" required />
         <Select name="status" placeholder="Select status" required>
-          <option value="Новая">Новая</option>
-          <option value="В обработке">В обработке</option>
-          <option value="Завершена">Завершена</option>
+          <option value="New">New</option>
+          <option value="Pending">Pending</option>
+          <option value="Fullfilled">Fullfilled</option>
         </Select>
         <Button type="submit" colorScheme="blue">
           ok

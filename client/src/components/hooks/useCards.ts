@@ -1,12 +1,14 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import {
   addCardThunk,
   deleteCardThunk,
   getCardsThunk,
   updateCardThunk,
+  getCardsByStatusThunk
 } from '../../redux/cards/cardAsyncAction';
 import type { CardDataType, CardType } from '../../types/CardTypes';
 import { useAppDispatch, useAppSelector } from './reduxHooks';
+import { setStatus } from '../../redux/cards/cardSlice';
 
 export default function useCards(): {
   cards: CardType[];
@@ -19,9 +21,10 @@ export default function useCards(): {
   selectedStatus: string | null;
 } {
   const cards = useAppSelector((state) => state.cards.data);
+  const filteredCards = useAppSelector((state) => state.cards.filteredData);
+  const selectedStatus = useAppSelector((state) => state.cards.status);
   const dispatch = useAppDispatch();
-  const [filteredCards, setFilteredCards] = useState<CardType[]>([]);
-  const [selectedStatus, setSelectedStatus] = useState<string | null>(null);
+console.log(selectedStatus)
 
   useEffect(() => {
     void dispatch(getCardsThunk());
@@ -29,11 +32,9 @@ export default function useCards(): {
 
   useEffect(() => {
     if (selectedStatus) {
-      setFilteredCards(cards.filter(card => card.status === selectedStatus));
-    } else {
-      setFilteredCards([]);
+      void dispatch(getCardsByStatusThunk(selectedStatus));
     }
-  }, [cards, selectedStatus]);
+  }, [dispatch, selectedStatus]);
 
   const cardSubmitHandler = (e: React.FormEvent<HTMLFormElement>): void => {
     e.preventDefault();
@@ -58,7 +59,7 @@ export default function useCards(): {
   };
 
   const filterHandler = (status: string): void => {
-    setSelectedStatus(status);
+    void dispatch(setStatus(status)); // Dispatch thunk to get filtered cards
   };
 
   const updateStatusHandler = (id: CardType['id'], status: string): void => {

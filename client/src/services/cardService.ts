@@ -20,13 +20,19 @@ class CardService {
     return this.api.delete(`/cards/${id}`);
   }
 
-  async getCardStatus(id: number): Promise<{ status: string }> {
-    const { data } = await this.api.get<{ status: string }>(`/cards/${id}/status`);
-    return data;
-  }
+  // async getCardStatus(id: number): Promise<{ status: string }> {
+  //   const { data } = await this.api.get<{ status: string }>(`/cards/${id}/status`);
+  //   return data;
+  // }
 
   async updateCard(id: CardType['id'], cardData: CardDataType): Promise<CardType> {
   const { data } = await this.api.patch<CardType>(`/cards/${id}`, cardData);
+  return data;
+}
+
+async getCardsByStatus(status: string): Promise<ApiResponse> {
+  console.log('Requesting filtered cards with status:', status);
+  const { data } = await this.api.get<ApiResponse>('/filter', { params: { status } });
   return data;
 }
 
