@@ -1,13 +1,22 @@
 import { useEffect, useState } from 'react';
-import { 
-  useGetCardsQuery, 
-  useAddCardMutation, 
-  useUpdateCardMutation, 
-  useDeleteCardMutation 
+import {
+  useGetCardsQuery,
+  useAddCardMutation,
+  useUpdateCardMutation,
+  useDeleteCardMutation
 } from '../../redux/cards/apiSlice';
 import type { CardType, CardDataType } from '../../types/CardTypes';
 
-export default function useCards(): JSX.Element {
+export default function useCards(): {
+  cards: CardType[];
+  filteredCards: CardType[];
+  cardSubmitHandler: (e: React.FormEvent<HTMLFormElement>) => Promise<void>;
+  deleteHandler: (id: number) => Promise<void>;
+  editHandler: (id: number, updatedCard: CardType) => Promise<void>;
+  filterHandler: (status: string) => void;
+  updateStatusHandler: (id: number, status: string) => Promise<void>;
+  selectedStatus: string | null;
+} {
   const { data: cards = [], refetch } = useGetCardsQuery();
   const [addCard] = useAddCardMutation();
   const [updateCard] = useUpdateCardMutation();
@@ -19,7 +28,7 @@ export default function useCards(): JSX.Element {
     if (selectedStatus) {
       setFilteredCards(cards.filter(card => card.status === selectedStatus));
     } else {
-      setFilteredCards([]);
+      setFilteredCards(cards);
     }
   }, [cards, selectedStatus]);
 
@@ -33,19 +42,31 @@ export default function useCards(): JSX.Element {
       return;
     }
 
-    await addCard(data).unwrap();
-    form.reset();
-    refetch();
+    try {
+      await addCard(data).unwrap();
+      form.reset();
+      void refetch();
+    } catch (error) {
+      console.error('Failed to add card', error);
+    }
   };
 
   const deleteHandler = async (id: number): Promise<void> => {
-    await deleteCard(id).unwrap();
-    refetch();
+    try {
+      await deleteCard(id).unwrap();
+      void refetch();
+    } catch (error) {
+      console.error('Failed to delete card', error);
+    }
   };
 
   const editHandler = async (id: number, updatedCard: CardType): Promise<void> => {
-    await updateCard({ id, updatedCard }).unwrap();
-    refetch();
+    try {
+      await updateCard({ id, updatedCard }).unwrap();
+      void refetch();
+    } catch (error) {
+      console.error('Failed to edit card', error);
+    }
   };
 
   const filterHandler = (status: string): void => {
@@ -55,8 +76,12 @@ export default function useCards(): JSX.Element {
   const updateStatusHandler = async (id: number, status: string): Promise<void> => {
     const updatedCard = cards.find(card => card.id === id);
     if (updatedCard) {
-      await updateCard({ id, updatedCard: { ...updatedCard, status } }).unwrap();
-      refetch();
+      try {
+        await updateCard({ id, updatedCard: { ...updatedCard, status } }).unwrap();
+        void refetch();
+      } catch (error) {
+        console.error('Failed to update status', error);
+      }
     }
   };
 

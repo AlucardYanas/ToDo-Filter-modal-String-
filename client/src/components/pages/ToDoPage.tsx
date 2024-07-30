@@ -1,10 +1,26 @@
-import { Box, Menu, MenuButton, MenuItem, MenuList, Button, Text } from '@chakra-ui/react';
 import React from 'react';
+import { Box, Menu, MenuButton, MenuItem, MenuList, Button, Text } from '@chakra-ui/react';
 import ToDoCard from '../ui/ToDoCard';
 import useCards from '../hooks/useCards';
 
 export default function ToDoPage(): JSX.Element {
   const { filteredCards, deleteHandler, filterHandler, updateStatusHandler, selectedStatus } = useCards();
+
+  const handleDelete = async (id: number): Promise<void> => {
+    await deleteHandler(id);
+  };
+
+  const handleUpdateStatus = async (id: number, status: string): Promise<void> => {
+    await updateStatusHandler(id, status);
+  };
+
+  const handleDeleteWrapper = (id: number): void => {
+    void handleDelete(id).catch((error) => console.error('Failed to delete card', error));
+  };
+
+  const handleUpdateStatusWrapper = (id: number, status: string):void  => {
+    void handleUpdateStatus(id, status).catch((error) => console.error('Failed to update status', error));
+  };
 
   return (
     <Box>
@@ -23,8 +39,8 @@ export default function ToDoPage(): JSX.Element {
           <ToDoCard
             key={el.id}
             card={el}
-            deleteHandler={deleteHandler}
-            updateStatusHandler={updateStatusHandler}
+            deleteHandler={() => handleDeleteWrapper(el.id)}
+            updateStatusHandler={(status) => handleUpdateStatusWrapper(el.id, status)}
           />
         ))
       ) : (

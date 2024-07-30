@@ -22,17 +22,17 @@ import {
 import type { CardType } from '../../types/CardTypes';
 import useEditModal from '../hooks/useEditModal';
 
-type CardTypes = {
+type CardProps = {
   card: CardType;
-  deleteHandler: (id: CardType['id']) => void;
-  updateStatusHandler: (id: CardType['id'], status: string) => void;
+  deleteHandler: () => void;
+  updateStatusHandler: (status: string) => void;
 };
 
 export default function ToDoCard({
   card,
   deleteHandler,
   updateStatusHandler,
-}: CardTypes): JSX.Element {
+}: CardProps): JSX.Element {
   const {
     isOpen,
     onOpen,
@@ -60,7 +60,7 @@ export default function ToDoCard({
               <Button colorScheme="blue" onClick={onOpen} mr={2}>
                 Edit
               </Button>
-              <Button colorScheme="red" onClick={() => deleteHandler(card.id)}>
+              <Button colorScheme="red" onClick={deleteHandler}>
                 Delete
               </Button>
               <Menu>
@@ -68,9 +68,9 @@ export default function ToDoCard({
                   Change Status
                 </MenuButton>
                 <MenuList>
-                  <MenuItem onClick={() => updateStatusHandler(card.id, 'Новая')}>Новая</MenuItem>
-                  <MenuItem onClick={() => updateStatusHandler(card.id, 'В обработке')}>В обработке</MenuItem>
-                  <MenuItem onClick={() => updateStatusHandler(card.id, 'Завершена')}>Завершена</MenuItem>
+                  <MenuItem onClick={() => updateStatusHandler('Новая')}>Новая</MenuItem>
+                  <MenuItem onClick={() => updateStatusHandler('В обработке')}>В обработке</MenuItem>
+                  <MenuItem onClick={() => updateStatusHandler('Завершена')}>Завершена</MenuItem>
                 </MenuList>
               </Menu>
             </Flex>

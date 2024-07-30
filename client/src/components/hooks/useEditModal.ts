@@ -1,10 +1,9 @@
-// hooks/useEditModal.ts
 import { useDisclosure } from '@chakra-ui/react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import type { CardType } from '../../types/CardTypes';
 import { useUpdateCardMutation } from '../../redux/cards/apiSlice';
 
-export default function useEditModal(card: CardType | null): {
+export default function useEditModal(cardProps: CardType | null): {
   isOpen: boolean;
   onOpen: () => void;
   onClose: () => void;
@@ -22,19 +21,23 @@ export default function useEditModal(card: CardType | null): {
   const [status, setStatus] = useState('');
   const [updateCard] = useUpdateCardMutation();
 
+  
   useEffect(() => {
-    if (card) {
-      setTitle(card.title);
-      setDescription(card.description);
-      setStatus(card.status);
+    if (cardProps) {
+      setTitle(cardProps.title);
+      setDescription(cardProps.description);
+      setStatus(cardProps.status);
     }
-  }, [card]);
+  }, [cardProps]);
 
-  const handleSave = async (): Promise<void> => {
-    if (card) {
-      const updatedCard = { ...card, title, description, status };
-      await updateCard({ id: card.id, updatedCard }).unwrap();
-      onClose();
+  const handleSave = (): void => {
+    if (cardProps) {
+      const updatedCard = { ...cardProps, title, description, status };
+      updateCard({ id: cardProps.id, updatedCard }).unwrap()
+        .then(() => onClose())
+        .catch(error => {
+          console.error('Failed to update card', error);
+        });
     }
   };
 
