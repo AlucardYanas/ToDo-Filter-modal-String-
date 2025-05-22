@@ -1,8 +1,8 @@
-# Elbrus Bootcamp Vite bundle
+
 
 ## React + Typescript + ESLint + Prettier
 
-Современный быстрый сборщик React проекта на Typescript с предустановленными настройками ESLint и Prettier от Elbrus Bootcamp.
+Современный быстрый сборщик React проекта на Typescript с предустановленными настройками ESLint и Prettier
 
 ## Использование
 
