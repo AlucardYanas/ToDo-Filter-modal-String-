@@ -1,112 +1,125 @@
-import React from 'react';
-import {
-  Button,
-  Card,
-  CardBody,
-  Flex,
-  Text,
-  Menu,
-  MenuButton,
-  MenuList,
-  MenuItem,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalFooter,
-  ModalBody,
-  ModalCloseButton,
-  Input,
-  Select,
-} from '@chakra-ui/react';
+import { Box, Text, IconButton, Flex, Checkbox } from '@chakra-ui/react';
+import { DeleteIcon, EditIcon } from '@chakra-ui/icons';
+import React, { memo, useCallback, lazy, Suspense } from 'react';
 import type { CardType } from '../../types/CardTypes';
 import useEditModal from '../hooks/useEditModal';
 
-type CardTypes = {
+const EditModal = lazy(() => import('./EditModal'));
+
+type ToDoCardProps = {
   card: CardType;
-  deleteHandler: (id: CardType['id']) => void;
-  updateStatusHandler: (id: CardType['id'], status: string) => void;
+  deleteHandler: (id: number) => void;
+  updateStatusHandler: (id: number) => void;
 };
 
-export default function ToDoCard({
-  card,
-  deleteHandler,
-  updateStatusHandler,
-}: CardTypes): JSX.Element {
-  const {
-    isOpen,
-    onOpen,
-    onClose,
-    handleSave,
-    title,
-    setTitle,
-    description,
-    setDescription,
-    status,
-    setStatus,
-  } = useEditModal(card);
+const ToDoCard = memo(
+  ({ card, deleteHandler, updateStatusHandler }: ToDoCardProps): JSX.Element => {
+    const isCompleted = card.status === 'completed';
+    const {
+      isOpen,
+      onOpen,
+      onClose,
+      handleSave,
+      title,
+      setTitle,
+      description,
+      setDescription,
+      status,
+      setStatus,
+    } = useEditModal(card);
 
-  return (
-    <>
-      <Card>
-        <CardBody>
-          <Flex justify="space-between" align="center">
-            <Flex align="center">
-              <Text>{card.title}</Text>
-              <Text>{card.description}</Text>
-              <Text>{card.status}</Text>
+    const handleTitleChange = useCallback(
+      (e: React.ChangeEvent<HTMLInputElement>): void => setTitle(e.target.value),
+      [setTitle],
+    );
+
+    const handleDescriptionChange = useCallback(
+      (e: React.ChangeEvent<HTMLInputElement>): void => setDescription(e.target.value),
+      [setDescription],
+    );
+
+    const handleStatusChange = useCallback(
+      (e: React.ChangeEvent<HTMLSelectElement>): void =>
+        setStatus(e.target.value as CardType['status']),
+      [setStatus],
+    );
+
+    const handleDelete = useCallback(() => deleteHandler(card.id), [deleteHandler, card.id]);
+    const handleStatusUpdate = useCallback(
+      () => updateStatusHandler(card.id),
+      [updateStatusHandler, card.id],
+    );
+
+    return (
+      <>
+        <Box
+          w="100%"
+          borderBottom="1px"
+          borderColor="gray.200"
+          py={4}
+          px={2}
+          _hover={{ bg: 'gray.50' }}
+          transition="all 0.2s"
+        >
+          <Flex align="center" justify="space-between" maxW="100%">
+            <Flex align="center" flex={1} minW={0}>
+              <Checkbox
+                isChecked={isCompleted}
+                onChange={handleStatusUpdate}
+                colorScheme="green"
+                size="lg"
+                flexShrink={0}
+              />
+              <Box ml={4} flex={1} minW={0}>
+                <Text
+                  variant="cardTitle"
+                  textDecoration={isCompleted ? 'line-through' : 'none'}
+                  color={isCompleted ? 'gray.400' : 'gray.700'}
+                >
+                  {card.title}
+                </Text>
+                <Text variant="cardDescription">{card.description}</Text>
+              </Box>
             </Flex>
-            <Flex>
-              <Button colorScheme="blue" onClick={onOpen} mr={2}>
-                Edit
-              </Button>
-              <Button colorScheme="red" onClick={() => deleteHandler(card.id)}>
-                Delete
-              </Button>
+            <Flex gap={2} flexShrink={0}>
+              <IconButton
+                aria-label="Edit todo"
+                icon={<EditIcon />}
+                variant="ghost"
+                colorScheme="blue"
+                size="sm"
+                onClick={onOpen}
+              />
+              <IconButton
+                aria-label="Delete todo"
+                icon={<DeleteIcon />}
+                variant="ghost"
+                colorScheme="red"
+                size="sm"
+                onClick={handleDelete}
+              />
             </Flex>
           </Flex>
-        </CardBody>
-      </Card>
+        </Box>
 
-      <Modal isOpen={isOpen} onClose={onClose}>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>Edit Card</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
-            <Input
-              name="title"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="Title"
-              mb={3}
+        {isOpen && (
+          <Suspense fallback={null}>
+            <EditModal
+              isOpen={isOpen}
+              onClose={onClose}
+              title={title}
+              description={description}
+              status={status}
+              handleTitleChange={handleTitleChange}
+              handleDescriptionChange={handleDescriptionChange}
+              handleStatusChange={handleStatusChange}
+              handleSave={handleSave}
             />
-            <Input
-              name="description"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              placeholder="Description"
-              mb={3}
-            />
-            <Select
-              value={status}
-              onChange={(e) => setStatus(e.target.value)}
-              placeholder="Select status"
-            >
-              <option value="Новая">Новая</option>
-              <option value="В обработке">В обработке</option>
-              <option value="Завершена">Завершена</option>
-            </Select>
-          </ModalBody>
+          </Suspense>
+        )}
+      </>
+    );
+  },
+);
 
-          <ModalFooter>
-            <Button colorScheme="blue" mr={3} onClick={handleSave}>
-              Save
-            </Button>
-            <Button variant="ghost" onClick={onClose}>Cancel</Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
-    </>
-  );
-}
+export default ToDoCard;

@@ -4,10 +4,38 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite + React + TS</title>
+    <title>Todo App</title>
+
+    <!-- Critical CSS -->
+    <style>
+      body {
+        margin: 0;
+        background-color: #f7fafc;
+      }
+      #root {
+        min-height: 100vh;
+      }
+      .loading-spinner {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+      }
+    </style>
+
+    <!-- Preconnect to API -->
+    <link rel="preconnect" href="http://localhost:3000" crossorigin />
+
+    <!-- Preload critical assets -->
+    <link rel="modulepreload" href="/src/main.tsx" as="script" />
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <div class="loading-spinner">
+        <!-- Initial loading state -->
+        Loading...
+      </div>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

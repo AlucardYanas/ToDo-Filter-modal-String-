@@ -1,31 +1,29 @@
-import React from 'react';
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import ToDoPage from './components/pages/ToDoPage';
-import Layout from './components/Layout';
-import PostToDo from './components/pages/PostToDo';
+import React, { lazy, Suspense } from 'react';
+import { Routes, Route } from 'react-router-dom';
+import { Spinner, Center } from '@chakra-ui/react';
+import Layout from './components/layout/Layout';
 
+const ToDoPage = lazy(() => import('./components/pages/ToDoPage'));
+const PostToDo = lazy(() => import('./components/pages/PostToDo'));
+
+function LoadingSpinner(): JSX.Element {
+  return (
+    <Center h="200px">
+      <Spinner size="xl" color="pink.500" thickness="4px" />
+    </Center>
+  );
+}
 
 function App(): JSX.Element {
-  const router = createBrowserRouter([
-    {
-      path: '/',
-      element: <Layout />,
-      children: [
-        {
-          path: '/',
-          element: <ToDoPage />,
-        },
-        {
-          path: '/PostToDo',
-          element: <PostToDo />,}
-      ],
-    },
-  ]);
-
   return (
-    
-      <RouterProvider router={router} />
-    
+    <Layout>
+      <Suspense fallback={<LoadingSpinner />}>
+        <Routes>
+          <Route path="/" element={<ToDoPage />} />
+          <Route path="/create" element={<PostToDo />} />
+        </Routes>
+      </Suspense>
+    </Layout>
   );
 }
 

@@ -1,15 +1,16 @@
-// Описание типа CardType для объекта Card
+// Тип для статуса карточки
+export type CardStatus = 'active' | 'completed';
+
+// Основной тип карточки
 export type CardType = {
-  id: number;  
+  id: number;
   title: string;
   description: string;
-  status: string;
-
-
+  status: CardStatus;
+  createdAt: string;
+  updatedAt: string;
 };
 
-// Описание типа CardDataType без поля 'id'
-export type CardDataType = Omit<CardType, 'id'>;
+export type CardDataType = Omit<CardType, 'id' | 'createdAt' | 'updatedAt'>;
 
-// Описание типа ApiResponse как массив объектов CardType
 export type ApiResponse = CardType[];

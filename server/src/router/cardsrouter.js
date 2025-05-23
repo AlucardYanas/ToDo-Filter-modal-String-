@@ -27,6 +27,17 @@ cardsRouter
         message: 'Ошибка добавления карточки',
       });
     }
+  })
+  .delete(async (req, res) => {
+    try {
+      await Card.destroy({ where: {} });
+      res.sendStatus(200);
+    } catch (error) {
+      console.log('Ошибка удаления всех карточек', error);
+      res.status(500).json({
+        message: 'Ошибка удаления всех карточек',
+      });
+    }
   });
 
 cardsRouter
@@ -80,25 +91,22 @@ cardsRouter
     }
   });
 
-  cardsRouter
-  .route('/:id/status')
-  .get(async (req, res) => {
-    try {
-      const { id } = req.params;
-      const card = await Card.findByPk(id, {
-        attributes: ['status']
-      });
-      if (!card) {
-        return res.status(404).json({ message: 'Карточка не найдена' });
-      }
-      res.status(200).json({ status: card.status });
-    } catch (error) {
-      console.log('Ошибка получения статуса карточки', error);
-      res.status(500).json({
-        message: 'Ошибка получения статуса карточки',
-      });
+cardsRouter.route('/:id/status').get(async (req, res) => {
+  try {
+    const { id } = req.params;
+    const card = await Card.findByPk(id, {
+      attributes: ['status'],
+    });
+    if (!card) {
+      return res.status(404).json({ message: 'Карточка не найдена' });
     }
-  });
-
+    res.status(200).json({ status: card.status });
+  } catch (error) {
+    console.log('Ошибка получения статуса карточки', error);
+    res.status(500).json({
+      message: 'Ошибка получения статуса карточки',
+    });
+  }
+});
 
 module.exports = cardsRouter;
