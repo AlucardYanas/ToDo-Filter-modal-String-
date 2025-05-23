@@ -1,11 +1,12 @@
-const { Router } = require('express');
-const { Card } = require('../../db/models');
+import { Request, Response } from 'express';
+import { Card } from '../models/card.model';
+import type {
+  CardCreationAttributes,
+  CardUpdateAttributes,
+} from '../../src/types/card.types';
 
-const cardsRouter = Router();
-
-cardsRouter
-  .route('/')
-  .get(async (req, res) => {
+export class CardController {
+  static async getAll(req: Request, res: Response): Promise<void> {
     try {
       const allCards = await Card.findAll();
       res.status(200).json(allCards);
@@ -15,8 +16,9 @@ cardsRouter
         message: 'Ошибка получения всех карточек',
       });
     }
-  })
-  .post(async (req, res) => {
+  }
+
+  static async create(req: Request, res: Response): Promise<void> {
     try {
       const { title, description, status } = req.body;
       const newCard = await Card.create({ title, description, status });
@@ -27,8 +29,9 @@ cardsRouter
         message: 'Ошибка добавления карточки',
       });
     }
-  })
-  .delete(async (req, res) => {
+  }
+
+  static async deleteAll(req: Request, res: Response): Promise<void> {
     try {
       await Card.destroy({ where: {} });
       res.sendStatus(200);
@@ -38,16 +41,15 @@ cardsRouter
         message: 'Ошибка удаления всех карточек',
       });
     }
-  });
+  }
 
-cardsRouter
-  .route('/:id')
-  .get(async (req, res) => {
+  static async getOne(req: Request, res: Response): Promise<void> {
     try {
       const { id } = req.params;
       const card = await Card.findByPk(id);
       if (!card) {
-        return res.status(404).json({ message: 'Карточка не найдена' });
+        res.status(404).json({ message: 'Карточка не найдена' });
+        return;
       }
       res.json(card);
     } catch (error) {
@@ -56,13 +58,15 @@ cardsRouter
         message: 'Ошибка получения карточки',
       });
     }
-  })
-  .delete(async (req, res) => {
+  }
+
+  static async delete(req: Request, res: Response): Promise<void> {
     try {
       const { id } = req.params;
       const card = await Card.findByPk(id);
       if (!card) {
-        return res.status(404).json({ message: 'Карточка не найдена' });
+        res.status(404).json({ message: 'Карточка не найдена' });
+        return;
       }
       await card.destroy();
       res.sendStatus(200);
@@ -72,14 +76,16 @@ cardsRouter
         message: 'Ошибка удаления карточки',
       });
     }
-  })
-  .patch(async (req, res) => {
+  }
+
+  static async update(req: Request, res: Response): Promise<void> {
     try {
       const { id } = req.params;
       const { title, description, status } = req.body;
       const card = await Card.findByPk(id);
       if (!card) {
-        return res.status(404).json({ message: 'Карточка не найдена' });
+        res.status(404).json({ message: 'Карточка не найдена' });
+        return;
       }
       await card.update({ title, description, status });
       res.json(card);
@@ -89,24 +95,24 @@ cardsRouter
         message: 'Ошибка редактирования карточки',
       });
     }
-  });
-
-cardsRouter.route('/:id/status').get(async (req, res) => {
-  try {
-    const { id } = req.params;
-    const card = await Card.findByPk(id, {
-      attributes: ['status'],
-    });
-    if (!card) {
-      return res.status(404).json({ message: 'Карточка не найдена' });
-    }
-    res.status(200).json({ status: card.status });
-  } catch (error) {
-    console.log('Ошибка получения статуса карточки', error);
-    res.status(500).json({
-      message: 'Ошибка получения статуса карточки',
-    });
   }
-});
 
-module.exports = cardsRouter;
+  static async getStatus(req: Request, res: Response): Promise<void> {
+    try {
+      const { id } = req.params;
+      const card = await Card.findByPk(id, {
+        attributes: ['status'],
+      });
+      if (!card) {
+        res.status(404).json({ message: 'Карточка не найдена' });
+        return;
+      }
+      res.status(200).json({ status: card.status });
+    } catch (error) {
+      console.log('Ошибка получения статуса карточки', error);
+      res.status(500).json({
+        message: 'Ошибка получения статуса карточки',
+      });
+    }
+  }
+}

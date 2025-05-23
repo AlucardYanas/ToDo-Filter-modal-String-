@@ -14,7 +14,10 @@ interface UseEditModalReturn {
   setStatus: (value: CardType['status']) => void;
 }
 
-export default function useEditModal(card: CardType): UseEditModalReturn {
+export default function useEditModal(
+  card: CardType,
+  editHandler: (id: number, updatedCard: CardType) => void,
+): UseEditModalReturn {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [title, setTitle] = useState<string>(card.title);
   const [description, setDescription] = useState<string>(card.description);
@@ -24,6 +27,12 @@ export default function useEditModal(card: CardType): UseEditModalReturn {
   const onClose = (): void => setIsOpen(false);
 
   const handleSave = (): void => {
+    editHandler(card.id, {
+      ...card,
+      title,
+      description,
+      status,
+    });
     onClose();
   };
 

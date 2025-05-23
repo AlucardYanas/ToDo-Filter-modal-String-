@@ -8,6 +8,7 @@ const ToDoPage: FC = () => {
   const {
     filteredCards,
     deleteHandler,
+    editHandler,
     filterHandler,
     updateStatusHandler,
     selectedStatus,
@@ -60,6 +61,7 @@ const ToDoPage: FC = () => {
               card={el}
               deleteHandler={deleteHandler}
               updateStatusHandler={updateStatusHandler}
+              editHandler={editHandler}
             />
           ))}
           <Text mt={4} color="gray.500">

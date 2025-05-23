@@ -35,7 +35,7 @@ module.exports = {
       },
     });
   },
-  async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('Cards');
+  down: async (_queryInterface, _Sequelize) => {
+    await _queryInterface.dropTable('Cards');
   },
 };

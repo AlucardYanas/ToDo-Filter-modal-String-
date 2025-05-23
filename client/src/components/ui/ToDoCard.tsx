@@ -10,10 +10,11 @@ interface ToDoCardProps {
   card: CardType;
   deleteHandler: (id: number) => void;
   updateStatusHandler: (id: number) => void;
+  editHandler: (id: number, updatedCard: CardType) => void;
 }
 
 const ToDoCard: FC<ToDoCardProps> = memo(
-  ({ card, deleteHandler, updateStatusHandler }): JSX.Element => {
+  ({ card, deleteHandler, updateStatusHandler, editHandler }): JSX.Element => {
     const isCompleted = card.status === 'completed';
     const {
       isOpen,
@@ -26,7 +27,7 @@ const ToDoCard: FC<ToDoCardProps> = memo(
       setDescription,
       status,
       setStatus,
-    } = useEditModal(card);
+    } = useEditModal(card, editHandler);
 
     const handleTitleChange = useCallback(
       (e: ChangeEvent<HTMLInputElement>): void => setTitle(e.target.value),
