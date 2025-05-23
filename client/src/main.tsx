@@ -1,22 +1,19 @@
-import React, { Suspense } from 'react';
-import ReactDOM from 'react-dom/client';
+import { StrictMode, Suspense } from 'react';
+import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { store } from './redux/store';
 import { ChakraProvider } from './providers/ChakraProvider';
+import React from 'react';
 
-// Предзагрузка критических компонентов
 const criticalComponents = import('./components/critical');
 
-// Ленивая загрузка App компонента
 const App = React.lazy(() =>
-  import('./App').then((module) =>
-    // Убедимся, что критические компоненты загружены
-    criticalComponents.then(() => module),
-  ),
+  import('./App').then((module) => criticalComponents.then(() => module)),
 );
 
-// Оптимизированный компонент загрузки
 function LoadingSpinner(): JSX.Element {
   return (
     <div className="loading-spinner">
@@ -29,8 +26,8 @@ function LoadingSpinner(): JSX.Element {
   );
 }
 
-ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
-  <React.StrictMode>
+createRoot(document.getElementById('root') as HTMLElement).render(
+  <StrictMode>
     <Provider store={store}>
       <ChakraProvider>
         <Suspense fallback={<LoadingSpinner />}>
@@ -38,7 +35,19 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
             <App />
           </BrowserRouter>
         </Suspense>
+        <ToastContainer
+          position="top-right"
+          autoClose={3000}
+          hideProgressBar={false}
+          newestOnTop
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="light"
+        />
       </ChakraProvider>
     </Provider>
-  </React.StrictMode>,
+  </StrictMode>,
 );

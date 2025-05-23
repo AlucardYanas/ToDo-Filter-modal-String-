@@ -1,43 +1,24 @@
-import { Box, Button, Text, Flex, Link as ChakraLink, useToast } from '@chakra-ui/react';
-import React from 'react';
+import { Box, Button, Text, Flex, Link as ChakraLink } from '@chakra-ui/react';
 import { Link as RouterLink } from 'react-router-dom';
+import React, { FC } from 'react';
 import ToDoCard from '../ui/ToDoCard';
 import useCards from '../hooks/useCards';
 
-export default function ToDoPage(): JSX.Element {
-  const { filteredCards, deleteHandler, filterHandler, updateStatusHandler, selectedStatus } =
-    useCards();
-  const toast = useToast();
-
-  const deleteAllCards = async () => {
-    try {
-      const response = await fetch('/api/cards/', {
-        method: 'DELETE',
-      });
-      if (response.ok) {
-        window.location.reload();
-        toast({
-          title: 'Все задачи удалены',
-          status: 'success',
-          duration: 3000,
-          isClosable: true,
-        });
-      }
-    } catch (error) {
-      toast({
-        title: 'Ошибка при удалении задач',
-        status: 'error',
-        duration: 3000,
-        isClosable: true,
-      });
-    }
-  };
+const ToDoPage: FC = () => {
+  const {
+    filteredCards,
+    deleteHandler,
+    filterHandler,
+    updateStatusHandler,
+    selectedStatus,
+    deleteAllCards,
+  } = useCards();
 
   return (
     <Box maxW="100%" overflow="hidden">
       <Flex justifyContent="space-between" mb={6}>
         <Flex gap={2}>
-        <Button
+          <Button
             variant={selectedStatus === 'all' ? 'solid' : 'ghost'}
             onClick={() => filterHandler('all')}
             colorScheme="gray"
@@ -58,8 +39,6 @@ export default function ToDoPage(): JSX.Element {
           >
             Completed
           </Button>
-          
-
         </Flex>
         <Flex gap={2}>
           <Button colorScheme="red" variant="ghost" onClick={deleteAllCards}>
@@ -94,4 +73,6 @@ export default function ToDoPage(): JSX.Element {
       )}
     </Box>
   );
-}
+};
+
+export default ToDoPage;

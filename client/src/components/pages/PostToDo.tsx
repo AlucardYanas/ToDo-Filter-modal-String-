@@ -1,13 +1,13 @@
 import { Box, Button, Input, Stack, Link as ChakraLink, Flex } from '@chakra-ui/react';
-import React from 'react';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import React, { FC, FormEvent } from 'react';
 import useCards from '../hooks/useCards';
 
-export default function PostToDo(): JSX.Element {
+const PostToDo: FC = () => {
   const { cardSubmitHandler } = useCards();
   const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
+  const handleSubmit = (e: FormEvent<HTMLFormElement>): void => {
     e.preventDefault();
     cardSubmitHandler(e);
     navigate('/');
@@ -48,4 +48,6 @@ export default function PostToDo(): JSX.Element {
       </Box>
     </Box>
   );
-}
+};
+
+export default PostToDo;

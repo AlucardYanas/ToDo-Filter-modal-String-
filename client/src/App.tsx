@@ -1,4 +1,4 @@
-import React, { lazy, Suspense } from 'react';
+import React, { FC, lazy, Suspense } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { Spinner, Center } from '@chakra-ui/react';
 import Layout from './components/layout/Layout';
@@ -6,15 +6,15 @@ import Layout from './components/layout/Layout';
 const ToDoPage = lazy(() => import('./components/pages/ToDoPage'));
 const PostToDo = lazy(() => import('./components/pages/PostToDo'));
 
-function LoadingSpinner(): JSX.Element {
+const LoadingSpinner: FC = () => {
   return (
     <Center h="200px">
       <Spinner size="xl" color="pink.500" thickness="4px" />
     </Center>
   );
-}
+};
 
-function App(): JSX.Element {
+const App: FC = () => {
   return (
     <Layout>
       <Suspense fallback={<LoadingSpinner />}>
@@ -25,6 +25,6 @@ function App(): JSX.Element {
       </Suspense>
     </Layout>
   );
-}
+};
 
 export default App;

@@ -1,11 +1,11 @@
 import { Box, Container } from '@chakra-ui/react';
-import React from 'react';
+import React, { FC, ReactNode } from 'react';
 
-type LayoutProps = {
-  children: React.ReactNode;
-};
+interface LayoutProps {
+  children: ReactNode;
+}
 
-export default function Layout({ children }: LayoutProps): JSX.Element {
+const Layout: FC<LayoutProps> = ({ children }) => {
   return (
     <Box bg="gray.50" minH="100vh" py={10}>
       <Container
@@ -27,4 +27,6 @@ export default function Layout({ children }: LayoutProps): JSX.Element {
       </Container>
     </Box>
   );
-}
+};
+
+export default Layout;

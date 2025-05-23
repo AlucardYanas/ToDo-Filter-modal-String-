@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback, useMemo } from 'react';
+import { toast } from 'react-toastify';
 import {
   addCardThunk,
   deleteCardThunk,
@@ -17,13 +18,13 @@ export default function useCards(): {
   filterHandler: (status: CardStatus | 'all') => void;
   updateStatusHandler: (id: CardType['id']) => void;
   selectedStatus: CardStatus | 'all' | null;
+  deleteAllCards: () => Promise<void>;
 } {
   const cards = useAppSelector((state) => state.cards.data);
   const dispatch = useAppDispatch();
   const [filteredCards, setFilteredCards] = useState<CardType[]>([]);
   const [selectedStatus, setSelectedStatus] = useState<CardStatus | 'all' | null>(null);
 
-  // Мемоизируем фильтрацию карточек
   const filterCards = useCallback(
     (status: CardStatus | 'all' | null) => {
       if (!status) return [];
@@ -33,7 +34,6 @@ export default function useCards(): {
     [cards],
   );
 
-  // Используем useMemo для фильтрованных карточек
   const memoizedFilteredCards = useMemo(
     () => filterCards(selectedStatus),
     [filterCards, selectedStatus],
@@ -43,7 +43,6 @@ export default function useCards(): {
     setFilteredCards(memoizedFilteredCards);
   }, [memoizedFilteredCards]);
 
-  // Загружаем карточки только один раз при монтировании
   useEffect(() => {
     void dispatch(getCardsThunk());
   }, [dispatch]);
@@ -55,26 +54,47 @@ export default function useCards(): {
       const data = Object.fromEntries(new FormData(e.currentTarget)) as CardDataType;
 
       if (!data.description || typeof data.description !== 'string') {
-        alert('Invalid description field');
+        toast.error('Неверное описание задачи');
         return;
       }
 
-      void dispatch(addCardThunk(data));
-      form.reset();
+      void dispatch(addCardThunk(data))
+        .unwrap()
+        .then(() => {
+          toast.success('Задача успешно создана');
+          form.reset();
+        })
+        .catch(() => {
+          toast.error('Ошибка при создании задачи');
+        });
     },
     [dispatch],
   );
 
   const deleteHandler = useCallback(
     (id: CardType['id']): void => {
-      void dispatch(deleteCardThunk(id));
+      void dispatch(deleteCardThunk(id))
+        .unwrap()
+        .then(() => {
+          toast.success('Задача успешно удалена');
+        })
+        .catch(() => {
+          toast.error('Ошибка при удалении задачи');
+        });
     },
     [dispatch],
   );
 
   const editHandler = useCallback(
     (id: CardType['id'], updatedCard: CardType): void => {
-      void dispatch(updateCardThunk({ id, updatedCard }));
+      void dispatch(updateCardThunk({ id, updatedCard }))
+        .unwrap()
+        .then(() => {
+          toast.success('Задача успешно изменена');
+        })
+        .catch(() => {
+          toast.error('Ошибка при изменении задачи');
+        });
     },
     [dispatch],
   );
@@ -88,11 +108,36 @@ export default function useCards(): {
       const updatedCard = cards.find((card) => card.id === id);
       if (updatedCard) {
         const newStatus = updatedCard.status === 'completed' ? 'active' : 'completed';
-        void dispatch(updateCardThunk({ id, updatedCard: { ...updatedCard, status: newStatus } }));
+        const statusText = newStatus === 'completed' ? 'завершена' : 'активна';
+
+        void dispatch(updateCardThunk({ id, updatedCard: { ...updatedCard, status: newStatus } }))
+          .unwrap()
+          .then(() => {
+            toast.success(`Задача отмечена как ${statusText}`);
+          })
+          .catch(() => {
+            toast.error('Ошибка при изменении статуса задачи');
+          });
       }
     },
     [cards, dispatch],
   );
+
+  const deleteAllCards = useCallback(async (): Promise<void> => {
+    try {
+      const response = await fetch('/api/cards/', {
+        method: 'DELETE',
+      });
+      if (response.ok) {
+        window.location.reload();
+        toast.success('Все задачи успешно удалены');
+      } else {
+        toast.error('Ошибка при удалении всех задач');
+      }
+    } catch {
+      toast.error('Ошибка при удалении всех задач');
+    }
+  }, []);
 
   return {
     cards,
@@ -103,5 +148,6 @@ export default function useCards(): {
     filterHandler,
     updateStatusHandler,
     selectedStatus,
+    deleteAllCards,
   };
 }

@@ -1,19 +1,19 @@
 import { Box, Text, IconButton, Flex, Checkbox } from '@chakra-ui/react';
 import { DeleteIcon, EditIcon } from '@chakra-ui/icons';
-import React, { memo, useCallback, lazy, Suspense } from 'react';
+import React, { FC, memo, useCallback, lazy, Suspense, ChangeEvent } from 'react';
 import type { CardType } from '../../types/CardTypes';
 import useEditModal from '../hooks/useEditModal';
 
 const EditModal = lazy(() => import('./EditModal'));
 
-type ToDoCardProps = {
+interface ToDoCardProps {
   card: CardType;
   deleteHandler: (id: number) => void;
   updateStatusHandler: (id: number) => void;
-};
+}
 
-const ToDoCard = memo(
-  ({ card, deleteHandler, updateStatusHandler }: ToDoCardProps): JSX.Element => {
+const ToDoCard: FC<ToDoCardProps> = memo(
+  ({ card, deleteHandler, updateStatusHandler }): JSX.Element => {
     const isCompleted = card.status === 'completed';
     const {
       isOpen,
@@ -29,24 +29,23 @@ const ToDoCard = memo(
     } = useEditModal(card);
 
     const handleTitleChange = useCallback(
-      (e: React.ChangeEvent<HTMLInputElement>): void => setTitle(e.target.value),
+      (e: ChangeEvent<HTMLInputElement>): void => setTitle(e.target.value),
       [setTitle],
     );
 
     const handleDescriptionChange = useCallback(
-      (e: React.ChangeEvent<HTMLInputElement>): void => setDescription(e.target.value),
+      (e: ChangeEvent<HTMLInputElement>): void => setDescription(e.target.value),
       [setDescription],
     );
 
     const handleStatusChange = useCallback(
-      (e: React.ChangeEvent<HTMLSelectElement>): void =>
-        setStatus(e.target.value as CardType['status']),
+      (e: ChangeEvent<HTMLSelectElement>): void => setStatus(e.target.value as CardType['status']),
       [setStatus],
     );
 
-    const handleDelete = useCallback(() => deleteHandler(card.id), [deleteHandler, card.id]);
+    const handleDelete = useCallback((): void => deleteHandler(card.id), [deleteHandler, card.id]);
     const handleStatusUpdate = useCallback(
-      () => updateStatusHandler(card.id),
+      (): void => updateStatusHandler(card.id),
       [updateStatusHandler, card.id],
     );
 
@@ -121,5 +120,7 @@ const ToDoCard = memo(
     );
   },
 );
+
+ToDoCard.displayName = 'ToDoCard';
 
 export default ToDoCard;

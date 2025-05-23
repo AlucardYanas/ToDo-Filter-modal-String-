@@ -1,3 +1,4 @@
+import React, { FC, memo, ChangeEvent } from 'react';
 import {
   Modal,
   ModalOverlay,
@@ -10,22 +11,21 @@ import {
   Select,
   Button,
 } from '@chakra-ui/react';
-import React, { memo } from 'react';
 import type { CardType } from '../../types/CardTypes';
 
-type EditModalProps = {
+interface EditModalProps {
   isOpen: boolean;
   onClose: () => void;
   title: string;
   description: string;
   status: CardType['status'];
-  handleTitleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  handleDescriptionChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  handleStatusChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
+  handleTitleChange: (e: ChangeEvent<HTMLInputElement>) => void;
+  handleDescriptionChange: (e: ChangeEvent<HTMLInputElement>) => void;
+  handleStatusChange: (e: ChangeEvent<HTMLSelectElement>) => void;
   handleSave: () => void;
-};
+}
 
-const EditModal = memo(
+const EditModal: FC<EditModalProps> = memo(
   ({
     isOpen,
     onClose,
@@ -36,7 +36,7 @@ const EditModal = memo(
     handleDescriptionChange,
     handleStatusChange,
     handleSave,
-  }: EditModalProps) => (
+  }) => (
     <Modal isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
       <ModalContent maxW="500px">
@@ -75,5 +75,7 @@ const EditModal = memo(
     </Modal>
   ),
 );
+
+EditModal.displayName = 'EditModal';
 
 export default EditModal;

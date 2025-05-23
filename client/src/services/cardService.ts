@@ -4,7 +4,7 @@ import type { ApiResponse, CardDataType, CardType } from '../types/CardTypes';
 import { localStorageService } from './localStorageService';
 
 class CardService {
-  private api: AxiosInstance;
+  private readonly api: AxiosInstance;
 
   constructor(api: AxiosInstance) {
     this.api = api;
@@ -28,7 +28,7 @@ class CardService {
       return data;
     } catch (error) {
       console.log('Failed to add card to API, using localStorage', error);
-      const newCard = {
+      const newCard: CardType = {
         ...obj,
         id: localStorageService.generateId(),
         createdAt: new Date().toISOString(),
@@ -39,7 +39,7 @@ class CardService {
     }
   }
 
-  async deleteCard(id: number): Promise<void> {
+  async deleteCard(id: CardType['id']): Promise<void> {
     try {
       await this.api.delete(`/cards/${id}`);
       localStorageService.deleteCard(id);
@@ -49,7 +49,7 @@ class CardService {
     }
   }
 
-  async getCardStatus(id: number): Promise<{ status: string }> {
+  async getCardStatus(id: CardType['id']): Promise<{ status: string }> {
     try {
       const { data } = await this.api.get<{ status: string }>(`/cards/${id}/status`);
       return data;
@@ -70,7 +70,7 @@ class CardService {
       return data;
     } catch (error) {
       console.log('Failed to update card in API, using localStorage', error);
-      const updatedCard = {
+      const updatedCard: CardType = {
         ...cardData,
         updatedAt: new Date().toISOString(),
       };

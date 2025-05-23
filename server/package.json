@@ -14,7 +14,9 @@
   "description": "",
   "devDependencies": {
     "@eslint/js": "^9.7.0",
-    "eslint": "^9.7.0",
+    "@typescript-eslint/eslint-plugin": "^8.32.1",
+    "@typescript-eslint/parser": "^8.32.1",
+    "eslint": "^9.27.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-react": "^7.35.0",
     "globals": "^15.8.0",
