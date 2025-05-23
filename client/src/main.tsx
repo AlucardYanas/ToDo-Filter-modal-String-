@@ -2,33 +2,43 @@ import React, { Suspense } from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
-import { Spinner, Center } from '@chakra-ui/react';
 import { store } from './redux/store';
-import App from './App';
+import { ChakraProvider } from './providers/ChakraProvider';
 
-// Ленивая загрузка ChakraProvider
-const ChakraProvider = React.lazy(() =>
-  import('@chakra-ui/react').then((module) => ({
-    default: module.ChakraProvider,
-  })),
+// Предзагрузка критических компонентов
+const criticalComponents = import('./components/critical');
+
+// Ленивая загрузка App компонента
+const App = React.lazy(() =>
+  import('./App').then((module) =>
+    // Убедимся, что критические компоненты загружены
+    criticalComponents.then(() => module),
+  ),
 );
 
-function LoadingSpinner() {
-  return <Center h="100vh">
-    <Spinner size="xl" color="pink.500" thickness="4px" />
-  </Center>
+// Оптимизированный компонент загрузки
+function LoadingSpinner(): JSX.Element {
+  return (
+    <div className="loading-spinner">
+      <div style={{ width: '80%', maxWidth: '600px' }}>
+        <div className="skeleton" style={{ width: '60%' }} />
+        <div className="skeleton" style={{ width: '80%' }} />
+        <div className="skeleton" style={{ width: '70%' }} />
+      </div>
+    </div>
+  );
 }
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
     <Provider store={store}>
-      <Suspense fallback={<LoadingSpinner />}>
-        <ChakraProvider>
+      <ChakraProvider>
+        <Suspense fallback={<LoadingSpinner />}>
           <BrowserRouter>
             <App />
           </BrowserRouter>
-        </ChakraProvider>
-      </Suspense>
+        </Suspense>
+      </ChakraProvider>
     </Provider>
   </React.StrictMode>,
 );

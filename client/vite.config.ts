@@ -5,12 +5,20 @@ import { compression } from 'vite-plugin-compression2';
 export default defineConfig({
   plugins: [
     react({
+      jsxImportSource: '@emotion/react',
       babel: {
-        plugins: [['@emotion/babel-plugin', { sourceMap: false }]],
+        plugins: [
+          ['@emotion/babel-plugin', { sourceMap: false }],
+          ['transform-react-remove-prop-types', { removeImport: true }],
+        ],
+        presets: [
+          ['@babel/preset-env', { modules: false }],
+          ['@babel/preset-react', { runtime: 'automatic', importSource: '@emotion/react' }],
+        ],
       },
     }),
     compression({
-      algorithm: 'brotli',
+      algorithm: 'brotliCompress',
       exclude: [/\.(br)$/, /\.(gz)$/],
       deleteOriginalAssets: false,
     }),
@@ -23,45 +31,56 @@ export default defineConfig({
     },
   },
   build: {
+    target: 'esnext',
     minify: 'terser',
-    terserOptions: {
-      compress: {
-        drop_console: true,
-        drop_debugger: true,
-        pure_funcs: ['console.log'],
-        passes: 2,
-      },
-      mangle: true,
-    },
+    cssCodeSplit: true,
+    reportCompressedSize: false,
     rollupOptions: {
       output: {
-        manualChunks: (id) => {
-          if (id.includes('node_modules')) {
-            if (id.includes('@chakra-ui')) {
-              return 'vendor-chakra';
-            }
-            if (id.includes('react') || id.includes('react-dom')) {
-              return 'vendor-react';
-            }
-            if (id.includes('react-router')) {
-              return 'vendor-router';
-            }
-            if (id.includes('@reduxjs') || id.includes('react-redux')) {
-              return 'vendor-redux';
-            }
-            return 'vendor';
-          }
+        manualChunks: {
+          'vendor-chakra': ['@chakra-ui/react', '@emotion/react', '@emotion/styled'],
+          'vendor-react': ['react', 'react-dom', 'react-router-dom'],
+          'vendor-redux': ['@reduxjs/toolkit', 'react-redux'],
         },
         chunkFileNames: 'assets/[name]-[hash].js',
         entryFileNames: 'assets/[name]-[hash].js',
         assetFileNames: 'assets/[name]-[hash].[ext]',
       },
     },
-    target: 'esnext',
+    terserOptions: {
+      compress: {
+        drop_console: true,
+        drop_debugger: true,
+        pure_funcs: ['console.log'],
+        passes: 3,
+        toplevel: true,
+        pure_getters: true,
+        unsafe: true,
+        unsafe_math: true,
+        unsafe_methods: true,
+      },
+      mangle: {
+        toplevel: true,
+        properties: {
+          regex: /^_/,
+        },
+      },
+      format: {
+        comments: false,
+      },
+    },
     sourcemap: false,
-    cssCodeSplit: true,
     assetsInlineLimit: 4096,
     emptyOutDir: true,
     chunkSizeWarningLimit: 1000,
+  },
+  optimizeDeps: {
+    include: [
+      '@chakra-ui/react',
+      '@emotion/react',
+      '@emotion/styled',
+      'react-router-dom',
+      '@reduxjs/toolkit',
+    ],
   },
 });

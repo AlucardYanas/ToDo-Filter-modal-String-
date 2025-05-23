@@ -4,7 +4,11 @@ import type { ApiResponse, CardDataType, CardType } from '../types/CardTypes';
 import { localStorageService } from './localStorageService';
 
 class CardService {
-  constructor(private readonly api: AxiosInstance) {}
+  private api: AxiosInstance;
+
+  constructor(api: AxiosInstance) {
+    this.api = api;
+  }
 
   async getCards(): Promise<CardType[]> {
     try {

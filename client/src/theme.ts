@@ -1,6 +1,14 @@
 import { extendTheme } from '@chakra-ui/react';
 
 const theme = extendTheme({
+  config: {
+    initialColorMode: 'light',
+    useSystemColorMode: false,
+  },
+  fonts: {
+    body: 'Inter, system-ui, sans-serif',
+    heading: 'Inter, system-ui, sans-serif',
+  },
   styles: {
     global: {
       'html, body': {
@@ -20,8 +28,13 @@ const theme = extendTheme({
       },
     },
     Button: {
+      baseStyle: {
+        _focus: {
+          boxShadow: 'none',
+        },
+      },
       defaultProps: {
-        variant: 'ghost',
+        colorScheme: 'pink',
       },
     },
     Checkbox: {
